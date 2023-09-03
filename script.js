@@ -1,84 +1,5 @@
 const moviesData = [];
-const genre = [
-  { id: 1, name: "All" },
-  {
-    id: 28,
-    name: "Action",
-  },
-  {
-    id: 12,
-    name: "Adventure",
-  },
-  {
-    id: 16,
-    name: "Animation",
-  },
-  {
-    id: 35,
-    name: "Comedy",
-  },
-  {
-    id: 80,
-    name: "Crime",
-  },
-  {
-    id: 99,
-    name: "Documentary",
-  },
-  {
-    id: 18,
-    name: "Drama",
-  },
-  {
-    id: 10751,
-    name: "Family",
-  },
-  {
-    id: 14,
-    name: "Fantasy",
-  },
-  {
-    id: 36,
-    name: "History",
-  },
-  {
-    id: 27,
-    name: "Horror",
-  },
-  {
-    id: 10402,
-    name: "Music",
-  },
-  {
-    id: 9648,
-    name: "Mystery",
-  },
-  {
-    id: 10749,
-    name: "Romance",
-  },
-  {
-    id: 878,
-    name: "Science Fiction",
-  },
-  {
-    id: 10770,
-    name: "TV Movie",
-  },
-  {
-    id: 53,
-    name: "Thriller",
-  },
-  {
-    id: 10752,
-    name: "War",
-  },
-  {
-    id: 37,
-    name: "Western",
-  },
-];
-
+let genre = [{ id: 1, name: "All" }];
 const options = {
   method: "GET",
   headers: {
@@ -104,7 +25,7 @@ function createMovieCard(movie) {
   showDescriptionBtn.addEventListener("click", () => {
     showMovieDescription(movie);
   });
-
+  console.log("new thing");
   return movieCard;
 }
 
@@ -159,7 +80,23 @@ function performSearch(searchTerm) {
     moviesSection.appendChild(movieCard);
   });
 }
-
+async function fetchGenresFromApi() {
+  const url = "https://api.themoviedb.org/3/genre/movie/list?language=en";
+  // const options = {
+  //   method: 'GET',
+  //   headers: {
+  //     accept: 'application/json',
+  //     Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxNzdiZTU0NmI4NDQ4YWQ3MGE1NTIyYzBmZmJhMTFmYSIsInN1YiI6IjY0ZDUwZWZhMDIxY2VlMDEzYjcyN2ZlOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.x_2C6LbZiZ3LiRFdDMnqLqrvGmriNqnX8OrLCguUlNs'
+  //   }
+  // };
+  try {
+    const response = await fetch(url, options);
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("error:" + err);
+  }
+}
 async function fetchMoviesFromAPI(page) {
   try {
     const response = await fetch(
@@ -175,7 +112,9 @@ async function fetchMoviesFromAPI(page) {
 }
 async function addGenresList() {
   const modal = document.querySelector(".filter");
+
   genre.forEach((gen) => {
+    console.log(gen);
     const optionElement = document.createElement("option");
     optionElement.value = gen.name;
     optionElement.textContent = gen.name;
@@ -185,6 +124,11 @@ async function addGenresList() {
   //modal.addEventListener("change", filterMoviesByGenre(modal.value));
 }
 async function initApp() {
+  const genredata = await fetchGenresFromApi();
+  console.log("here", genredata);
+  genredata.genres.forEach((a) => {
+    genre.push(a);
+  });
   addGenresList();
   const moviesSection = document.querySelector(".listMovie");
 
